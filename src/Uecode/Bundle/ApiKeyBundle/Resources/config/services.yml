@@ -1,16 +1,23 @@
 parameters:
-    uecode.api_key.provider.user_provider.class: Uecode\Bundle\ApiKeyBundle\Security\Authentication\Provider\UserProvider
-    uecode.api_key.provider.api_key.class:       Uecode\Bundle\ApiKeyBundle\Security\Authentication\Provider\ApiKeyProvider
-    uecode.api_key.listener.api_key.class:       Uecode\Bundle\ApiKeyBundle\Security\Firewall\ApiKeyListener
+    uecode.api_key.provider.api_key.class:     Uecode\Bundle\ApiKeyBundle\Security\Core\Authentication\Provider\ApiKeyProvider
+    uecode.api_key.listener.api_key.class:     Uecode\Bundle\ApiKeyBundle\Security\Http\Firewall\ApiKeyListener
+    uecode.api_key.entry_point.api_key.class:  Uecode\Bundle\ApiKeyBundle\Security\Http\EntryPoint\ApiKeyEntryPoint
+    uecode.api_key.user_checker.api_key.class:  Uecode\Bundle\ApiKeyBundle\Security\Core\User\ApiKeyUserChecker
 
 services:
-    uecode.api_key.provider.user_provider:
-        class: %uecode.api_key.provider.user_provider.class%
-        arguments: [@fos_user.user_manager]
     uecode.api_key.provider.api_key:
         class: %uecode.api_key.provider.api_key.class%
-        arguments: [""]
+        arguments: [null, @uecode.api_key.user_checker.api_key, null]
     uecode.api_key.listener.api_key:
         class: %uecode.api_key.listener.api_key.class%
-        arguments: [@security.context, @security.authentication.manager]
-
+        arguments: [@security.context, @security.authentication.manager, null, null, [], null, @?logger]
+        public: false
+        tags:
+            - {name: monolog.logger, channel: security}
+    uecode.api_key.entry_point.api_key:
+        class: %uecode.api_key.entry_point.api_key.class%
+        arguments: [null, null]
+        public: false
+    uecode.api_key.user_checker.api_key:
+        class: %uecode.api_key.user_checker.api_key.class%
+        public: false
