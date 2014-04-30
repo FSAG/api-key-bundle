@@ -66,6 +66,10 @@ class ApiKeyProvider implements AuthenticationProviderInterface
 
         try {
             $user = $this->retrieveUser($token);
+
+            if (!$user instanceof UserInterface) {
+                throw new AuthenticationServiceException('retrieveUser() must return a UserInterface.');
+            }
         } catch (UsernameNotFoundException $e) {
             if ($this->hideUserNotFoundExceptions) {
                 throw new BadCredentialsException('Bad credentials', 0, $e);
