@@ -32,7 +32,6 @@ class ApiKeyFactory implements SecurityFactoryInterface
             ->treatNullLike(array('query_param'=>'api_key'))
             ->children()
                 ->scalarNode('provider')->end()
-                ->scalarNode('stateless')->defaultTrue()->end()
                 ->scalarNode('realm')->defaultValue('Secured API')->end()
                 ->scalarNode('discriminator')->defaultNull()->end()
                 ->scalarNode('query_param')->cannotBeEmpty()->defaultFalse()->end()
