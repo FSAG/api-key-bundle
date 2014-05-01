@@ -21,5 +21,12 @@ interface ApiKeyUserInterface extends UserInterface
      *
      * @return boolean
      */
+    public function isApiKeyEnabled($discriminator = null);
+
+    /**
+     * @param string|null $discriminator
+     *
+     * @return boolean
+     */
     public function isApiKeyNonExpired($discriminator = null);
 }

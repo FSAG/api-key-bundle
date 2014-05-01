@@ -19,6 +19,16 @@ class ApiKeyUserChecker extends UserChecker
     public function checkPreAuth(UserInterface $user, $discriminator = null)
     {
         parent::checkPreAuth($user);
+
+        if (!$user instanceof ApiKeyUserInterface) {
+            return;
+        }
+
+        if (!$user->isApiKeyEnabled($discriminator)) {
+            $ex = new CredentialsExpiredException('User api_key is not enabled.');
+            $ex->setUser($user);
+            throw $ex;
+        }
     }
 
     /**
@@ -33,7 +43,7 @@ class ApiKeyUserChecker extends UserChecker
         }
 
         if (!$user->isApiKeyNonExpired($discriminator)) {
-            $ex = new CredentialsExpiredException('User api_key have expired.');
+            $ex = new CredentialsExpiredException('User api_key has expired.');
             $ex->setUser($user);
             throw $ex;
         }
