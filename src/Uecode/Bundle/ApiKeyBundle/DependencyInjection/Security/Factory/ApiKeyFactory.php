@@ -74,13 +74,31 @@ class ApiKeyFactory implements SecurityFactoryInterface
 
     protected function createEntryPoint(ContainerBuilder $container, $id, $config, $defaultEntryPointId)
     {
+        $challenge = $config['basic_auth'] ? 'Basic' : ($config['header_token'] ?: ($config['query_param'] ? 'QueryString' : null));
+
+        if (null != $defaultEntryPointId) {
+            $definition = new DefinitionDecorator($defaultEntryPointId);
+
+            $definition
+                ->addArgument(array(
+                    $this->getKey() => array(
+                        'challenge' => $challenge,
+                        'realm'     => $config['realm'],
+                    )
+                ))
+            ;
+        } else {
+            $definition = new DefinitionDecorator('uecode.api_key.entry_point.api_key');
+
+            $definition
+                ->replaceArgument(0, $challenge)
+                ->replaceArgument(1, $config['realm'])
+            ;
+        }
+
         $entryPointId = 'security.authentication.entry_point.api_key.' . $id;
 
-        $container
-            ->setDefinition($entryPointId, new DefinitionDecorator('uecode.api_key.entry_point.api_key'))
-            ->replaceArgument(0, $config['basic_auth'] ? 'Basic' : ($config['header_token'] ?: ($config['query_param'] ? 'QueryString' : null)))
-            ->replaceArgument(1, $config['realm'])
-        ;
+        $container->setDefinition($entryPointId, $definition);
 
         return $entryPointId;
     }
