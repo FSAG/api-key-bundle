@@ -138,7 +138,7 @@ class ApiKeyListener implements ListenerInterface
                 $this->logger->info(sprintf('Authorization %s[%s] failed for api_key "%s": %s', $fetchType, $checkValue, $apiKey, $failed->getMessage()));
             }
 
-            $event->setResponse($this->authenticationEntryPoint->start($request));
+            $event->setResponse($this->authenticationEntryPoint->start($request, $failed));
         }
     }
 
